@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_custom_scroll)
 
         val verticalSeekbar = findViewById<VerticalSeekBar>(R.id.custom_scroll_bar)
-        verticalSeekbar.setOnLableClickListener { Toast.makeText(this, "Label clicked", Toast.LENGTH_SHORT).show() }
+//        verticalSeekbar.setOnLableClickListener { Toast.makeText(this, "Label clicked", Toast.LENGTH_SHORT).show() }
         verticalSeekbar.setOnSeekPercentLisener { percent ->
             findViewById<TextView>(R.id.tv_monitor).setText("percent: ${percent.times(100).roundToInt()}%")
         }

@@ -15,7 +15,7 @@
         app:isClickable="true"
         app:labelText="Init text"
         app:percentFull="70%"
-        app:progressbarWidth="16dp"
+        app:step="10"
         />
 
     <TextView
