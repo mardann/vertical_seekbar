@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="VerticalSeekBar">
+        <attr name="minValue" format="integer"/>
+        <attr name="maxValue" format="integer"/>
+        <attr name="step" format="integer"/>
+        <attr name="emptyProgressBarColor" format="color"/>
+        <attr name="fullProgressBarColor" format="color"/>
+        <attr name="thumbDrawable"  format="reference"/>
+        <attr name="iconDrawable" format="reference"/>
+        <attr name="labelSize" format="dimension"/>
+        <attr name="labelTypeface" format="reference"/>
+        <attr name="labelColor" format="color"/>
+        <attr name="isClickable" format="boolean"/>
+        <attr name="labelText" format="string"/>
+        <attr name="percentFull" format="fraction"/>
+        <attr name="underlineColor" format="color"/>
+        <attr name="progressbarWidth" format="dimension"/>
+    </declare-styleable>
+</resources>

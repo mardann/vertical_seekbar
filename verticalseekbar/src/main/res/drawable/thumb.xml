@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/back_blue" android:gravity="center">
+        <shape android:shape="oval" >
+            <size android:height="27dp"
+                android:width="27dp"/>
+            <solid android:color="#2171af"/>
+        </shape>
+    </item>
+
+    <item android:id="@+id/white_front" android:gravity="center">
+        <shape android:shape="oval">
+            <size android:width="7dp" android:height="7dp"/>
+            <solid android:color="@android:color/white"/>
+        </shape>
+
+    </item>
+
+</layer-list>
