@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import com.onoapps.hanan.verticalseekbar.VerticalSeekBar
+import kotlinx.android.synthetic.main.activity_custom_scroll.*
 import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
@@ -13,13 +14,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_custom_scroll)
 
-        val verticalSeekbar = findViewById<VerticalSeekBar>(R.id.custom_scroll_bar)
-//        verticalSeekbar.setOnLableClickListener { Toast.makeText(this, "Label clicked", Toast.LENGTH_SHORT).show() }
-        verticalSeekbar.setOnSeekPercentLisener { percent ->
-            findViewById<TextView>(R.id.tv_monitor).setText("percent: ${percent.times(100).roundToInt()}%")
+        custom_scroll_bar.setOnSeekPercentLisener { percent ->
+            tv_monitor.text = "percent: ${percent.times(100).roundToInt()}%"
         }
-        verticalSeekbar.setOnSeekValueListener { value ->
-            findViewById<TextView>(R.id.tv_value).setText("value: ${value}")
+        custom_scroll_bar.setOnSeekValueListener { value ->
+            tv_value.text = "value: ${value}"
         }
+
+
     }
 }
