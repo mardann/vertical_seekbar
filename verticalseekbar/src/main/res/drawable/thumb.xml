@@ -1,18 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/back_blue" android:gravity="center">
-        <shape android:shape="oval" >
-            <size android:height="27dp"
-                android:width="27dp"/>
-            <solid android:color="#2171af"/>
+    <!--<item-->
+        <!--android:id="@+id/shadow"-->
+        <!--android:gravity="center" >-->
+        <!--<shape android:shape="ring"   android:useLevel="false">-->
+           <!--&lt;!&ndash;<stroke android:width="5dp" android:color="#46000000"/>&ndash;&gt;-->
+            <!--<size-->
+                <!--android:width="30dp"-->
+                 <!--/>-->
+
+            <!--<gradient-->
+
+                <!--android:gradientRadius="50%"-->
+                <!--android:centerColor="#86ff0000"-->
+                <!--android:type="radial" />-->
+
+            <!--<padding-->
+                <!--android:bottom="2dp"-->
+                <!--android:left="2dp" />-->
+
+        <!--</shape>-->
+
+    <!--</item>-->
+    <item
+        android:id="@+id/back_blue"
+        android:gravity="center" >
+        <shape android:shape="oval" android:useLevel="false">
+            <size
+                android:width="27dp"
+                android:height="27dp" />
+            <solid android:color="#2171af" />
+
         </shape>
     </item>
 
-    <item android:id="@+id/white_front" android:gravity="center">
-        <shape android:shape="oval">
-            <size android:width="7dp" android:height="7dp"/>
-            <solid android:color="@android:color/white"/>
-        </shape>
+    <item
+        android:id="@+id/white_front"
+        android:gravity="center">
+    <shape android:shape="oval" android:useLevel="false">
+        <size
+            android:width="7dp"
+            android:height="7dp" />
+        <solid android:color="#ffffff" />
+    </shape>
 
     </item>
 

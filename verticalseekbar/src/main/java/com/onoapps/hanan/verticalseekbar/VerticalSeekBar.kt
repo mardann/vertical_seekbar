@@ -1,10 +1,8 @@
 package com.onoapps.hanan.verticalseekbar
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.Rect
@@ -19,7 +17,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -42,23 +39,23 @@ class VerticalSeekBar : View {
     internal var mUpdateStep: Int = 0
     private var mLabelFont: Typeface? = null
     private var mLabelIconDrawable: Drawable? = null
-    private var mThumbDrawable: Drawable? = null
+    private lateinit var mThumbDrawable: Drawable
     private var mTextSize: Int = 0
 
-    private var mImgThumb: Bitmap? = null
+
     internal var centerHorizontal: Int = 0
-    internal var thumbCenter: Point = Point()
+
     internal var initialVertical: Float = 0.toFloat()
 
     internal var isDragging = false
 
-    internal var mThumbPaddingVertical: Int = 0
-    internal var mThumbPaddingHorizontal: Int = 0
+
+    private lateinit var thumb: Thumb
 
 
     private var mScrollBarHeight: Int = 0
 
-    internal var progressBarRadius = dpToPx(4f, context)
+    internal var progressBarRadius = Utils.dpToPx(4f, context)
 
     private val mProgBar: RectF = RectF()
     private var mEmptyProgBarPaint: Paint? = null
@@ -69,7 +66,7 @@ class VerticalSeekBar : View {
     private val mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mLabelText: String? = ""
     private val mTextBounds = Rect()
-    private val mLabelIconPadding = dpToPx(4f, context)
+    private val mLabelIconPadding = Utils.dpToPx(4f, context)
     private var mLableIconDrawRect: Rect? = null
     private var mUnderlinePaint: Paint? = null
     private var mLableMarginRight: Int = 0
@@ -121,11 +118,11 @@ class VerticalSeekBar : View {
             setLableUnderlineColor(typedArray.getColor(R.styleable.VerticalSeekBar_underlineColor, -0x43403d))
             setLabelTextColor(typedArray.getColor(R.styleable.VerticalSeekBar_labelColor, -0xde8e51))
 
-            setThumbDrawable(typedArray.getResourceId(R.styleable.VerticalSeekBar_thumbDrawable, R.drawable.thumb))
+            setThumbDrawable(typedArray.getResourceId(R.styleable.VerticalSeekBar_thumbDrawable, R.drawable.ic_thumb))
             setLabelIconDrawable(typedArray.getResourceId(R.styleable.VerticalSeekBar_iconDrawable, R.drawable.ic_create_black_24dp))
-            setProgressBarWidth(typedArray.getDimensionPixelSize(R.styleable.VerticalSeekBar_progressbarWidth, dpToPx(8f, context)))
+            setProgressBarWidth(typedArray.getDimensionPixelSize(R.styleable.VerticalSeekBar_progressbarWidth, Utils.dpToPx(8f, context)))
 
-            setTextSize(typedArray.getDimensionPixelSize(R.styleable.VerticalSeekBar_labelSize, spToPx(22f, context)))
+            setTextSize(typedArray.getDimensionPixelSize(R.styleable.VerticalSeekBar_labelSize, Utils.spToPx(22f, context)))
             setLabelFont(ResourcesCompat.getFont(context, typedArray.getResourceId(R.styleable.VerticalSeekBar_labelTypeface, R.font.almoni_dl_aaa_regular)))
             setLabelText(typedArray.getString(R.styleable.VerticalSeekBar_labelText))
             setLabelClickable(typedArray.getBoolean(R.styleable.VerticalSeekBar_isClickable, false))
@@ -227,14 +224,9 @@ class VerticalSeekBar : View {
 
     private fun init() {
         isSaveEnabled = true
-        thumbCenter = Point()
 
-        mThumbPaddingHorizontal = mThumbDrawable!!.intrinsicWidth / 2
-        mThumbPaddingVertical = mThumbDrawable!!.intrinsicHeight / 2
-        mImgThumb = Bitmap.createBitmap(mThumbDrawable!!.intrinsicWidth, mThumbDrawable!!.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        val thumbCanvas = Canvas(mImgThumb!!)
-        mThumbDrawable!!.setBounds(0, 0, thumbCanvas.width, thumbCanvas.height)
-        mThumbDrawable!!.draw(thumbCanvas)
+        thumb = Thumb(this, mThumbDrawable, Utils.dpToPx(6f, context), Utils.dpToPx(4f,context))
+
 
         mLabelIconBitmap = Bitmap.createBitmap(mLabelIconDrawable!!.intrinsicWidth, mLabelIconDrawable!!.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val labelIcon = Canvas(mLabelIconBitmap!!)
@@ -243,7 +235,7 @@ class VerticalSeekBar : View {
         mLableIconDrawRect = mLabelIconDrawable!!.bounds
 
         mThumbPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        mThumbPaint!!.setShadowLayer(12f, -4f, 4f, -0x80000000)
+        mThumbPaint!!.setShadowLayer(3f, -3f, 3f, -0x70000000)
         setLayerType(View.LAYER_TYPE_SOFTWARE, mThumbPaint)
 
         mEmptyProgBarPaint = Paint()
@@ -259,13 +251,13 @@ class VerticalSeekBar : View {
 
 
         mUnderlinePaint = Paint()
-        mUnderlinePaint!!.strokeWidth = dpToPx(1.5f, context).toFloat()
+        mUnderlinePaint!!.strokeWidth = Utils.dpToPx(1.5f, context).toFloat()
         mUnderlinePaint!!.style = Paint.Style.FILL_AND_STROKE
         mUnderlinePaint!!.color = mLableUnderlineColor
 
-        mLableMarginRight = dpToPx(32f, context)
-        mUnderlineMargin = dpToPx(10f, context)
-        mTextTouchPadding = dpToPx(4f, context)
+        mLableMarginRight = Utils.dpToPx(32f, context)
+        mUnderlineMargin = Utils.dpToPx(10f, context)
+        mTextTouchPadding = Utils.dpToPx(4f, context)
 
 
         invalidate()
@@ -277,13 +269,13 @@ class VerticalSeekBar : View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         centerHorizontal = measuredWidth / 2
 
-        mScrollBarHeight = measuredHeight - paddingBottom - paddingTop - 2 * mThumbPaddingVertical
+        mScrollBarHeight = measuredHeight - paddingBottom - paddingTop - 2 * thumb.mThumbHalfHeight
         val inverseFillPercent = 1.0f - mPercentFull
 
         initialVertical = paddingTop + mScrollBarHeight * inverseFillPercent
-        thumbCenter.set(centerHorizontal, initialVertical.toInt())
-        mProgBar.set((centerHorizontal - progressBarRadius).toFloat(), (paddingTop + mThumbPaddingVertical).toFloat(), (centerHorizontal + progressBarRadius).toFloat(), (measuredHeight - paddingBottom - mThumbPaddingVertical).toFloat())
-        mFullProgBarRect.set((centerHorizontal - progressBarRadius).toFloat(), thumbCenter.y.toFloat(), (centerHorizontal + progressBarRadius).toFloat(), (measuredHeight - paddingBottom - mThumbPaddingVertical).toFloat())
+        thumb.updateCenterPoint(centerHorizontal, initialVertical.toInt())
+        mProgBar.set((centerHorizontal - progressBarRadius).toFloat(), (paddingTop + thumb.mThumbHalfHeight).toFloat(), (centerHorizontal + progressBarRadius).toFloat(), (measuredHeight - paddingBottom - thumb.mThumbHalfHeight).toFloat())
+        mFullProgBarRect.set((centerHorizontal - progressBarRadius).toFloat(), thumb.getCenterPoint().y.toFloat(), (centerHorizontal + progressBarRadius).toFloat(), (measuredHeight - paddingBottom - thumb.mThumbHalfWidth).toFloat())
         mTextPaint.getTextBounds(mLabelText, 0, mLabelText!!.length, mTextBounds)
     }
 
@@ -294,13 +286,12 @@ class VerticalSeekBar : View {
         canvas.drawRoundRect(mProgBar, progressBarRadius.toFloat(), progressBarRadius.toFloat(), mEmptyProgBarPaint!!)
 
         //draw full-section progressbar
-        mFullProgBarRect.top = thumbCenter.y.toFloat()
+        mFullProgBarRect.top = thumb.getCenterPoint().y.toFloat()
         canvas.drawRoundRect(mFullProgBarRect, progressBarRadius.toFloat(), progressBarRadius.toFloat(), mFullProgBarPaint!!)
 
         //draw thumb location
-        if (mImgThumb != null) {
-            canvas.drawBitmap(mImgThumb!!, (thumbCenter.x - mThumbPaddingHorizontal).toFloat(), (thumbCenter.y - mThumbPaddingVertical).toFloat(), mThumbPaint)
-        }
+
+        thumb.drawThumb(canvas)
 
         drawLabel(canvas)
 
@@ -310,22 +301,22 @@ class VerticalSeekBar : View {
         if (mLabelText != null) {
 
             canvas.drawText(mLabelText!!,
-                    (thumbCenter.x + mLableMarginRight).toFloat(),
-                    (thumbCenter.y - mTextBounds.centerY()).toFloat(),
+                    (thumb.getCenterPoint().x + mLableMarginRight).toFloat(),
+                        (thumb.getCenterPoint().y - mTextBounds.centerY()).toFloat(),
                     mTextPaint)
 
-            var underlineEnd = thumbCenter.x + mLableMarginRight + mTextBounds.right
+            var underlineEnd = thumb.getCenterPoint().x + mLableMarginRight + mTextBounds.right
 
             if (mIsLabelClickable) {
-                val rightOfTextWithPadding = thumbCenter.x + mLableMarginRight + mTextBounds.right + mLabelIconPadding
-                mLableIconDrawRect!!.offsetTo(rightOfTextWithPadding, thumbCenter.y - mLableIconDrawRect!!.height() / 2)
+                val rightOfTextWithPadding = thumb.getCenterPoint().x + mLableMarginRight + mTextBounds.right + mLabelIconPadding
+                mLableIconDrawRect!!.offsetTo(rightOfTextWithPadding, thumb.getCenterPoint().y - mLableIconDrawRect!!.height() / 2)
                 canvas.drawBitmap(mLabelIconBitmap!!, null, mLableIconDrawRect!!, null)
                 //extend line under icon too
                 underlineEnd += mLableIconDrawRect!!.width()
             }
 
-            val underlieHeight = thumbCenter.y - mTextBounds.centerY() + mUnderlineMargin
-            canvas.drawLine((thumbCenter.x + mLableMarginRight).toFloat(),
+            val underlieHeight = thumb.getCenterPoint().y - mTextBounds.centerY() + mUnderlineMargin
+            canvas.drawLine((thumb.getCenterPoint().x + mLableMarginRight).toFloat(),
                     underlieHeight.toFloat(),
                     underlineEnd.toFloat(),
                     underlieHeight.toFloat(),
@@ -348,7 +339,7 @@ class VerticalSeekBar : View {
 
     private fun determineDownTouchHandler(event: MotionEvent): Boolean {
         return when {
-            isWithinThumbBounds(event) -> {
+            thumb.isWithinThumbBounds(event) -> {
                 isDragging = true
                 true
             }
@@ -377,29 +368,24 @@ class VerticalSeekBar : View {
             notifyListeners(1.0f)
             return
         }
-        thumbCenter.y = event.y.toInt()
+
+        thumb.updateCenterPoint(y = event.y.toInt())
         setPercentageWhileDrag(event)
         invalidate()
 
     }
 
-    private fun isWithinThumbBounds(event: MotionEvent): Boolean {
-        return event.y >= thumbCenter.y - mThumbPaddingVertical &&
-                event.y <= thumbCenter.y + mThumbPaddingVertical &&
-                event.x >= thumbCenter.x - mThumbPaddingHorizontal &&
-                event.x <= thumbCenter.x + mThumbPaddingHorizontal
-    }
 
     private fun isWithinTextBounds(event: MotionEvent): Boolean {
         val halfTextHeight = Math.abs(mTextBounds.top - mTextBounds.bottom) / 2
-        return event.x >= thumbCenter.x + mLableMarginRight - mTextTouchPadding &&
-                event.x <= thumbCenter.x + mLableMarginRight + mTextBounds.right + mTextTouchPadding &&
-                event.y >= thumbCenter.y - halfTextHeight - mTextTouchPadding &&
-                event.y <= thumbCenter.y + halfTextHeight + mTextTouchPadding
+        return event.x >= thumb.getCenterPoint().x + mLableMarginRight - mTextTouchPadding &&
+                event.x <= thumb.getCenterPoint().x + mLableMarginRight + mTextBounds.right + mTextTouchPadding &&
+                event.y >= thumb.getCenterPoint().y - halfTextHeight - mTextTouchPadding &&
+                event.y <= thumb.getCenterPoint().y + halfTextHeight + mTextTouchPadding
     }
 
     private fun setPercentageWhileDrag(event: MotionEvent) {
-        val percentInPx = measuredHeight.toFloat() - event.y - paddingBottom.toFloat() - mThumbPaddingVertical.toFloat()
+        val percentInPx = measuredHeight.toFloat() - event.y - paddingBottom.toFloat() - thumb.mThumbHalfHeight.toFloat()
         val percent = percentInPx / mScrollBarHeight
         notifyListeners(percent)
 
@@ -432,11 +418,11 @@ class VerticalSeekBar : View {
     }
 
     private fun exceededMaxBounds(event: MotionEvent): Boolean {
-        return event.y - mThumbPaddingVertical <= paddingTop
+        return event.y - thumb.mThumbHalfHeight <= paddingTop
     }
 
     private fun exceededMinBounds(event: MotionEvent): Boolean {
-        return event.y + mThumbPaddingVertical > measuredHeight - paddingBottom
+        return event.y + thumb.mThumbHalfHeight > measuredHeight - paddingBottom
     }
 
 
@@ -456,18 +442,6 @@ class VerticalSeekBar : View {
         invalidate()
     }
 
-
-
-    companion object {
-
-        fun spToPx(sp: Float, context: Context): Int {
-            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.resources.displayMetrics).toInt()
-        }
-
-        fun dpToPx(dp: Float, context: Context): Int {
-            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics).toInt()
-        }
-    }
 
 
 }
