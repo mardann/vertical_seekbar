@@ -1,5 +1,6 @@
 package il.co.procyon.verticalseekbar
 
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
@@ -19,6 +20,10 @@ class MainActivity : AppCompatActivity() {
         }
         custom_scroll_bar.setOnSeekValueListener { value ->
             tv_value.text = "value: ${value}"
+            custom_scroll_bar.setLabelText("$${value}")
+        }
+        custom_scroll_bar.setOnLableClickListener {
+            Toast.makeText(this, "label click", Toast.LENGTH_LONG).show()
         }
 
 

@@ -11,9 +11,10 @@ import kotlin.math.log
 import kotlin.properties.Delegates
 import kotlin.properties.Delegates.observable
 
-class Thumb(view: View, mThumbDrawable: Drawable, val verticalPadding: Int = 0, val horizontalPadding: Int = 0) {
+class Thumb(view: View, val verticalPadding: Int = 0, val horizontalPadding: Int = 0) {
 
-    var mImgThumb: Bitmap
+    var mThumbDrawable: Drawable? = null
+    lateinit var mImgThumb: Bitmap
     val mContainingRect: Rect = Rect()
     var mThumbHalfHeight: Int = 0
     var mThumbHalfWidth: Int = 0
@@ -30,13 +31,13 @@ class Thumb(view: View, mThumbDrawable: Drawable, val verticalPadding: Int = 0, 
         strokeWidth = 2f
     }
 
-    init {
-        mThumbHalfWidth = mThumbDrawable.intrinsicWidth / 2
-        mThumbHalfHeight = mThumbDrawable.intrinsicHeight / 2
-        mImgThumb = Bitmap.createBitmap(mThumbDrawable.intrinsicWidth, mThumbDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+    fun init() {
+        mThumbHalfWidth = mThumbDrawable!!.intrinsicWidth / 2
+        mThumbHalfHeight = mThumbDrawable!!.intrinsicHeight / 2
+        mImgThumb = Bitmap.createBitmap(mThumbDrawable!!.intrinsicWidth, mThumbDrawable!!.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val thumbCanvas = Canvas(mImgThumb)
-        mThumbDrawable.setBounds(0, 0, thumbCanvas.width, thumbCanvas.height)
-        mThumbDrawable.draw(thumbCanvas)
+        mThumbDrawable!!.setBounds(0, 0, thumbCanvas.width, thumbCanvas.height)
+        mThumbDrawable!!.draw(thumbCanvas)
     }
 
 
