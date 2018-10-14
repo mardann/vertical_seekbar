@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:paddingTop="24dp"
         android:paddingBottom="24dp"
-        app:isClickable="false"
+        app:isClickable="true"
         app:labelText="Init text"
         app:percentFull="70%"
         app:step="10"

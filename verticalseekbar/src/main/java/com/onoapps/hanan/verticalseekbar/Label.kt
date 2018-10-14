@@ -3,38 +3,47 @@ package com.onoapps.hanan.verticalseekbar
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.support.annotation.ColorInt
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import kotlin.properties.Delegates.observable
 import kotlin.reflect.KProperty
 
-@Suppress("UNREACHABLE_CODE")
-class Label(var view: View, var side: Side= Label.Side.RIGHT) {
+class Label(var view: View, var side: Side = Label.Side.RIGHT) {
 
-    var mTextSize: Int = Utils.spToPx(16f, view.context)
+    var textPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    var underlinePaint: Paint = Paint()
+
+    var mTextSize: Int by observable(Utils.spToPx(16f, view.context)) { property: KProperty<*>, oldValue: Int, newValue: Int ->
+        textPaint.textSize = newValue.toFloat()
+
+    }
+
+    var labelTextColor: Int by observable(Color.GRAY) { property, oldValue, newValue ->
+        textPaint.color = newValue
+    }
+
+    var labelFont: Typeface by observable(Typeface.DEFAULT) { property, oldValue, newValue ->
+        textPaint.typeface = newValue
+    }
+
     @ColorInt
     var lableUnderlineColor: Int = Color.GRAY
-    @ColorInt
-    var labelTextColor: Int = Color.GRAY
-    var labelFont: Typeface? = null
     val mContainingRect = Rect()
     val mTextBounds = Rect()
     var marginFromThumb: Int = Utils.dpToPx(16f, view.context)
-    val mLabelIconPadding = Utils.dpToPx(4f, view.context)
     var mIsLabelClickable: Boolean = true
+
     val mUnderlineMargin = Utils.dpToPx(6f, view.context)
     val mLableMarginRight = Utils.dpToPx(4f, view.context)
 
+
     val mLabelPaddingHorizontal = Utils.dpToPx(8f, view.context)
+
     val mLabelPaddingVertical = Utils.dpToPx(8f, view.context)
 
-
-    var textPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-
-    var underlinePaint: Paint = Paint()
-
     var mLabelText by observable(String()) { property: KProperty<*>, oldValue: String, newValue: String ->
-
+        Log.d("Observable String", "property:$property, oldvalue: $oldValue, new value: $newValue")
         textPaint.getTextBounds(newValue, 0, newValue.length, mTextBounds)
 
     }
@@ -46,11 +55,7 @@ class Label(var view: View, var side: Side= Label.Side.RIGHT) {
     }
 
     fun init() {
-        textPaint.apply {
-            textSize = mTextSize.toFloat()
-            color = labelTextColor
-            typeface = labelFont ?: return@apply
-        }
+
         underlinePaint.apply {
             strokeWidth = Utils.dpToPx(1.5f, view.context).toFloat()
             style = Paint.Style.FILL_AND_STROKE
@@ -76,23 +81,7 @@ class Label(var view: View, var side: Side= Label.Side.RIGHT) {
 
 
         mLabelText.let {
-            val rectTop = thumbRect.centerY() - mTextBounds.height() / 2 - mLabelPaddingVertical
-            if(side == Label.Side.RIGHT) {
-
-                        mContainingRect.set(
-                                thumbRect.right + marginFromThumb,
-                                rectTop,
-                                thumbRect.right + marginFromThumb + totalLabelWidth(),
-                                rectTop + totalLabelHeight()
-                        )
-            } else {
-                mContainingRect.set(
-                        thumbRect.left - marginFromThumb - totalLabelWidth(),
-                        rectTop,
-                        thumbRect.left - marginFromThumb,
-                        rectTop + totalLabelHeight()
-                )
-            }
+            buildLabelRectOnProperSide(thumbRect)
 
 //            canvas.drawRect(mContainingRect, mRectPaint)
 
@@ -111,7 +100,7 @@ class Label(var view: View, var side: Side= Label.Side.RIGHT) {
                     underlinePaint
             )
 
-            if(mIsLabelClickable){
+            if (mIsLabelClickable) {
                 //for y position- we want the icon to be centered with the text. so we calculate half the text height (center) and move up
                 //half the icons height
                 val iconY = (mContainingRect.top + mTextBounds.height() / 2 + mLabelPaddingHorizontal) - (mLableIconDrawRect!!.height().toFloat() / 2f).toInt()
@@ -121,6 +110,26 @@ class Label(var view: View, var side: Side= Label.Side.RIGHT) {
                 canvas.drawBitmap(mLabelIconBitmap!!, null, mLableIconDrawRect!!, null)
 //                canvas.drawRect(mLableIconDrawRect, mRectPaint)
             }
+        }
+    }
+
+    private fun buildLabelRectOnProperSide(thumbRect: Rect) {
+        val rectTop = thumbRect.centerY() - mTextBounds.height() / 2 - mLabelPaddingVertical
+        if (side == Side.RIGHT) {
+
+            mContainingRect.set(
+                    thumbRect.right + marginFromThumb,
+                    rectTop,
+                    thumbRect.right + marginFromThumb + totalLabelWidth(),
+                    rectTop + totalLabelHeight()
+            )
+        } else {
+            mContainingRect.set(
+                    thumbRect.left - marginFromThumb - totalLabelWidth(),
+                    rectTop,
+                    thumbRect.left - marginFromThumb,
+                    rectTop + totalLabelHeight()
+            )
         }
     }
 
@@ -141,7 +150,7 @@ class Label(var view: View, var side: Side= Label.Side.RIGHT) {
         return mContainingRect.contains(event.x.toInt(), event.y.toInt())
     }
 
-    enum class Side{
+    enum class Side {
         LEFT,
         RIGHT
     }

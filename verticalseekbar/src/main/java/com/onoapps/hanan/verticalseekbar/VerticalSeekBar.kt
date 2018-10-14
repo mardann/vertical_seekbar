@@ -52,7 +52,6 @@ class VerticalSeekBar : View {
     private val mFullProgBarRect: RectF = RectF()
     private var mFullProgBarPaint: Paint? = null
 
-    private var mLabelText: String? = ""
 
     private var mTextTouchPadding: Int = 0
 
@@ -248,7 +247,7 @@ class VerticalSeekBar : View {
         mProgBar.set((centerHorizontal - progressBarRadius).toFloat(), (paddingTop + thumb.mThumbHalfHeight).toFloat(), (centerHorizontal + progressBarRadius).toFloat(), (measuredHeight - paddingBottom - thumb.mThumbHalfHeight).toFloat())
         mFullProgBarRect.set((centerHorizontal - progressBarRadius).toFloat(), thumb.getCenterPoint().y.toFloat(), (centerHorizontal + progressBarRadius).toFloat(), (measuredHeight - paddingBottom - thumb.mThumbHalfWidth).toFloat())
 //        mTextPaint.getTextBounds(mLabelText, 0, mLabelText!!.length, mTextBounds)
-        label.mLabelText = mLabelText?:""
+//        label.mLabelText = mLabelText?:""
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -368,7 +367,7 @@ class VerticalSeekBar : View {
         val superState = super.onSaveInstanceState()
         val ourState = SavedState(superState!!)
         ourState.savedPercentage = mPercentFull
-        ourState.savedLabel = mLabelText
+        ourState.savedLabel = label.mLabelText
         return ourState
     }
 
@@ -376,7 +375,7 @@ class VerticalSeekBar : View {
         val ourState = state as SavedState
         super.onRestoreInstanceState(ourState.superState)
         mPercentFull = ourState.savedPercentage
-        mLabelText = ourState.savedLabel
+        label.mLabelText = ourState.savedLabel?:""
         invalidate()
     }
 
