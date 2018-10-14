@@ -210,7 +210,7 @@ class VerticalSeekBar : View {
 
     private fun loadExtraObjetcs() {
         thumb = Thumb(this, Utils.dpToPx(6f, context), Utils.dpToPx(4f, context))
-        label = Label(this, Label.Side.RIGHT)
+        label = Label(this, Label.Side.LEFT)
     }
     private fun init() {
         isSaveEnabled = true

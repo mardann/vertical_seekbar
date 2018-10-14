@@ -43,7 +43,7 @@ class Thumb(view: View, val verticalPadding: Int = 0, val horizontalPadding: Int
 
     fun drawThumb(canvas: Canvas) {
         canvas.drawBitmap(mImgThumb, (thumbCenter.x - mThumbHalfWidth).toFloat(), (thumbCenter.y - mThumbHalfHeight).toFloat(), mThumbPaint)
-        canvas.drawRect(mContainingRect, mRectPaint)
+//        canvas.drawRect(mContainingRect, mRectPaint)
     }
 
     fun isWithinThumbBounds(event: MotionEvent): Boolean {

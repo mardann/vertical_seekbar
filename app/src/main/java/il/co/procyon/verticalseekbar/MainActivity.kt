@@ -1,6 +1,8 @@
 package il.co.procyon.verticalseekbar
 
+import android.animation.ArgbEvaluator
 import android.content.Context
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
@@ -11,12 +13,16 @@ import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
+    val colorInterpolatop: ArgbEvaluator = ArgbEvaluator()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_custom_scroll)
 
+
         custom_scroll_bar.setOnSeekPercentLisener { percent ->
             tv_monitor.text = "percent: ${percent.times(100).roundToInt()}%"
+            custom_scroll_bar.setLabelTextColor(colorInterpolatop.evaluate(percent, Color.GREEN, Color.RED) as Int)
         }
         custom_scroll_bar.setOnSeekValueListener { value ->
             tv_value.text = "value: ${value}"
